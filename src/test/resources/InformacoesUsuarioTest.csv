@@ -1,0 +1,3 @@
+testAdicionarUmaInformacaoAdicionalDoUsuario,user, password,type,contact,expectedMessage
+                                            ,TestUser,TestUser123,Phone,+551199998888,Your contact has been added!
+                                            ,TestUser,TestUser123,E-mail,email@emailbr.com,Your contact has been added!

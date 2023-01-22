@@ -1,51 +1,80 @@
 package tests;
 
 import static org.junit.Assert.*;
+
+import org.easetech.easytest.annotation.DataLoader;
+import org.easetech.easytest.annotation.Param;
+import org.easetech.easytest.runner.DataDrivenTestRunner;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.openqa.selenium.By;
+import org.junit.rules.TestName;
+import org.junit.runner.RunWith;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
+import pages.BasePage;
+import pages.LoginPage;
+import suporte.Generator;
+import suporte.Screenshot;
+import suporte.Web;
 
-import java.util.concurrent.TimeUnit;
-
+@RunWith(DataDrivenTestRunner.class)
+@DataLoader(filePaths = "InformacoesUsuarioTest.csv")
 public class InformacoesUsuarioTest {
+    private WebDriver browser;
+
+    @Rule
+    public TestName test = new TestName();
+    @Before
+    public void setUp() {
+        browser = Web.createChrome();
+    }
+
     @Test
-    public void testAdicionarUmaInformacaoAdicionalDoUsuario() {
-        //Abrindo o navegador
-        System.setProperty("webdriver.chrome.driver", "C:\\Users\\drivers\\chromedriver.exe");
-        WebDriver navegador = new ChromeDriver();
-        navegador.manage().window().maximize();
-        navegador.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+    public void testAdicionarUmaInformacaoAdicionalDoUsuario(@Param(name = "user") String userOne,
+                                                             @Param(name = "password") String passwordOne,
+                                                             @Param(name = "type") String type,
+                                                             @Param(name = "contact") String contact,
+                                                             @Param(name = "expectedMessage") String expectedMessage) {
+        String toastText = new LoginPage(browser)
+                .clickSignIn()
+                .userLogin(userOne, passwordOne)
+                .clickAccountSettings()
+                .clickMoreDataTab()
+                .clickMoreDataTab()
+                .clickMoreDataButton()
+                .addContact(type, contact)
+                .getToastText();
+        assertEquals(expectedMessage, toastText);
+        new BasePage(browser)
+                .takePrint(test.getMethodName());
+    }
+    /*@Test
+    public void removerUmContatoDeUmUsuario(){
+        //clicar no elemento com xpath //span[text()="+551199998888"]/following-sibling::a
+        navegador.findElement(By.xpath("//span[text()=\"+551199998888\"]/following-sibling::a")).click();
 
-        //Navegando para a página do Taskit
-        navegador.get("http://www.juliodelima.com.br/taskit");
+        //confirmar a janela em javascript
+        navegador.switchTo().alert().accept();
 
-        //Clicar no link que tem o texto Sign in
-        navegador.findElement(By.linkText("Sign in")).click();
+        //Validar que a mensagem apresentada foi a "Rest in peace, dear phone!"
+        WebElement mensagemPop = navegador.findElement(By.id("toast-container"));
+        String mensagem = mensagemPop.getText();
+        assertEquals("Rest in peace, dear phone!",mensagem);
+        String screenshotArquivo = "C:\\projects\\test-report\\taskit\\" + Generator.dataHoraParaArquivo() + test.getMethodName() + ".png";
+        Screenshot.tirar(navegador, screenshotArquivo);
 
-        //identificando o form de login
-        WebElement formularioSignInBox = navegador.findElement(By.id("signinbox"));
+        //Aguardar até 10 segundos para que a janela desapareça
+        WebDriverWait aguardar = new WebDriverWait(navegador, Duration.ofSeconds(10));
+        aguardar.until(ExpectedConditions.stalenessOf(mensagemPop));
 
-        //Digitar no campo com name "login" q esta dentro do form de id="signinbox" o texto "TestUser"
-        formularioSignInBox.findElement(By.name("login")).sendKeys("TestUser");
+        //Clicar no link com de texto "Logout"
+        navegador.findElement(By.linkText("Logout")).click();
+    }*/
 
-        //Clicar no campo com name "password" q esta dentro do form de id="signinbox"
-        formularioSignInBox.findElement(By.name("password")).sendKeys("TestUser123");
-
-        //Clicar no link com o texto "SIGN IN"
-        navegador.findElement(By.linkText("SIGN IN")).click();
-
-        //Validar que dentro do elemento com class "me" está o texto "Hi, TestUser"
-        WebElement me = navegador.findElement(By.className("me"));
-        String textoNoElementoMe = me.getText();
-        assertEquals("Hi, TestUser", textoNoElementoMe);
-
-
+    @After
+    public void tearDown() {
         //Fechar o navegador
-        navegador.quit();
-
-        //Validação
-
+        browser.quit();
     }
 }

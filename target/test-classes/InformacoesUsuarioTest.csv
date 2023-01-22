@@ -1,0 +1,3 @@
+testAdicionarUmaInformacaoAdicionalDoUsuario,user,password,type,contact,expectedMessage,Duration(ms),Duration(ms),Duration(ms),Duration(ms),Duration(ms)
+"",TestUser,TestUser123,Phone,+551199998888,Your contact has been added!,2405.0,2405.0,2405.0,2405.0,2405.0
+"",TestUser,TestUser123,E-mail,email@emailbr.com,Your contact has been added!,1988.0,1988.0,1988.0,1988.0,1988.0
